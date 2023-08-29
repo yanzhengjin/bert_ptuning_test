@@ -87,7 +87,7 @@ for receipt in train_receipts:
     if not new_label:
         continue
 
-    # 在这里再进行其他标签处理，例如将 "[P0:COMPANY]" 替换为 "COMPANY"
+    #将 "[P0:COMPANY]" 替换为 "COMPANY"
     new_label = new_label.replace("[P0:COMPANY]", "COMPANY")
     new_label = new_label.replace("[P1:ADDRESS]", "ADDRESS")
     new_label = new_label.replace("[P2:TIME]", "TIME")
@@ -138,7 +138,7 @@ for receipt in validation_receipts:
     if not new_label:
         continue
 
-    # 在这里再进行其他标签处理,将"[P0:COMPANY]" 替换为 "COMPANY"
+    # 将"[P0:COMPANY]" 替换为 "COMPANY"
     new_label = new_label.replace("[P0:COMPANY]", "COMPANY")
     new_label = new_label.replace("[P1:ADDRESS]", "ADDRESS")
     new_label = new_label.replace("[P2:TIME]", "TIME")
@@ -168,7 +168,6 @@ for label in validation_labels:
 labels_to_ids = {label: idx for idx, label in enumerate(label_to_id)}
 validation_labels_tensor = torch.tensor([labels_to_ids[label] for label in validation_labels], dtype=torch.long)
 
-
 # 创建模型
 model = BertForMaskedLM.from_pretrained(model_name)
 #将Pseudo Token映射为可训练的embedding tensors
@@ -180,7 +179,7 @@ for token_id in pseudo_token_ids:
 model.bert.embeddings.dropout = torch.nn.Dropout(0.7)
 
 #批大小
-batch_size =32
+batch_size =48
 
 # 创建TensorDataset
 train_dataset = TensorDataset(input_ids_tensor, attention_masks_tensor, labels_tensor)
@@ -193,7 +192,7 @@ validation_dataloader = DataLoader(validation_dataset, batch_size=batch_size, sh
 # 训练循环
 model.to('cuda')
 num_epochs = 500
-optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=2e-5)
+optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5, weight_decay=2e-5)
 criterion = torch.nn.CrossEntropyLoss()
   
 best_accuracy = 0.0
